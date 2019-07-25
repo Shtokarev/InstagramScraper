@@ -6,7 +6,7 @@ const { Cluster } = require('puppeteer-cluster');
 const checkIpApiUrlHttps = 'https://api.myip.com';
 const checkIpApiUrlHttp = 'http://ip-api.com/json';
 
-const MAX_INSTAGRAM_PROFILE_LINKS_NOT_DIE = 100;
+const MAX_INSTAGRAM_PROFILE_LINKS_NOT_DIE = 70;
 
 const proxyArrayHttp = [
   {
@@ -147,12 +147,12 @@ class PersonCard {
 
   isFullProfile() {
     return (
-      this._shortLink && this._profileLink
-      // &&
-      // (this._numberOfPublications ||
-      //   this._numberOfFollowers ||
-      //   this._numberOfFollowing ||
-      //   this._profileDescriptionInnerHtml)
+      this._shortLink &&
+      this._profileLink &&
+      (this._numberOfPublications ||
+        this._numberOfFollowers ||
+        this._numberOfFollowing ||
+        this._profileDescriptionInnerHtml)
     );
   }
 }
@@ -251,14 +251,14 @@ class InstagramHashScrapper {
       });
       this._browser.on('targetdestroyed', function(err) {
         console.error(`Targetdestroyed ${err}`);
-        // if (this.resultTable.size < this.numberOfUsers) {
-        //   this.restartCounter++;
-        //   console.error(`DISCONNECTED!!! restarting" ${err}`);
-        //   setTimeout(async () => {
-        //     await this.loadData();
-        //   }, 1000);
-        //   return;
-        // }
+        if (this.resultTable.size < this.numberOfUsers) {
+          this.restartCounter++;
+          console.error(`DISCONNECTED!!! restarting" ${err}`);
+          setTimeout(async () => {
+            await this.loadData();
+          }, 1000);
+          return;
+        }
       });
 
       let page;
@@ -606,14 +606,14 @@ class InstagramHashScrapper {
         console.log(`WE HAVE NO errors in process!`);
       }
 
-      // for (let person of arrayUnicElement.values()) {
-      //   if (person.profileLink) {
-      //     this._cluster.queue(person.shortLink, scrapProfile);
-      //   }
-      // }
+      for (let person of arrayUnicElement.values()) {
+        if (person.profileLink) {
+          this._cluster.queue(person.shortLink, scrapProfile);
+        }
+      }
 
-      // await this._cluster.idle();
-      // errors = 0;
+      await this._cluster.idle();
+      errors = 0;
 
       for (let person of arrayUnicElement.values()) {
         if (!person.isFullProfile()) {
@@ -639,5 +639,5 @@ class InstagramHashScrapper {
   }
 }
 
-const loader = new InstagramHashScrapper('Fashionblogger', 200, true, false);
+const loader = new InstagramHashScrapper('Fashionblogger', 100, true, false);
 loader.launch();
