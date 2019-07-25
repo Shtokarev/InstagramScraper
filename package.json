@@ -1,0 +1,11 @@
+{
+  "name": "instagram-scraper",
+  "version": "1.0.0",
+  "description": "search and scrap profile by tag in instagram",
+  "main": "instagramScrapper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yuriy Shtokarev",
+  "license": "ISC"
+}
