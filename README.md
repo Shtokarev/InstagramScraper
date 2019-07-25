@@ -1,4 +1,4 @@
-# InstagramScrper
+# InstagramScraper
 
 Search and scrap instagram profile by tag
 
