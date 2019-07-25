@@ -1,0 +1,17 @@
+{
+  "name": "instagram-scraper",
+  "version": "1.0.0",
+  "description": "search and scrap profile by tag in instagram",
+  "main": "instagramScrapper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yuriy Shtokarev",
+  "license": "ISC",
+  "dependencies": {
+    "axios-https-proxy-fix": "^0.17.1",
+    "fs-extra": "^8.1.0",
+    "puppeteer": "^1.19.0",
+    "puppeteer-cluster": "^0.16.0"
+  }
+}
