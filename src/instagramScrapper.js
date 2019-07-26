@@ -1,7 +1,16 @@
+const {
+  Worker,
+  isMainThread,
+  parentPort,
+  workerData
+} = require('worker_threads');
+const path = require('path');
 const axios = require('axios-https-proxy-fix');
 const fs = require('fs-extra');
 const puppeteer = require('puppeteer');
 const { Cluster } = require('puppeteer-cluster');
+
+const runWorker = require('../src/workerHelper');
 
 const checkIpApiUrlHttps = 'https://api.myip.com';
 const checkIpApiUrlHttp = 'http://ip-api.com/json';
@@ -634,10 +643,62 @@ class InstagramHashScrapper {
     }
   }
 
-  launch() {
-    this.loadData();
+  // async runWorker(workerData) {
+  //   return new Promise((resolve, reject) => {
+  //     const worker = new Worker('./src/worker.js', { workerData });
+  //     worker.on('message', resolve);
+  //     worker.on('error', reject);
+  //     worker.on('exit', code => {
+  //       if (code !== 0)
+  //         reject(new Error(`Worker stopped with exit code ${code}`));
+  //     });
+  //   });
+  // }
+
+  async launch() {
+    // const result = await this.runWorker('world');
+
+    const worker = runWorker(
+      path.join(__dirname, '/worker.js'),
+      (err, data) => {
+        if (err) {
+          return null;
+        }
+
+        console.log(data);
+        // arr[0] = 5;
+      },
+      { idWorker: '0001' }
+    );
+
+    worker.postMessage({ data: 'postmessage!!!!!' });
+
+    setTimeout(() => {
+      worker.postMessage('exit');
+    }, 3000);
+    // console.log(result);
+    // this.loadData();
   }
 }
 
-const loader = new InstagramHashScrapper('Fashionblogger', 100, true, false);
-loader.launch();
+// const loader = new InstagramHashScrapper('Fashionblogger', 100, true, false);
+// loader.launch();
+
+// process.setMaxListeners(20);
+
+for (let k = 0; k < 10; k++) {
+  let worker = runWorker(
+    path.join(__dirname, '/worker.js'),
+    (err, data) => {
+      if (err) {
+        return null;
+      }
+
+      // console.log(data);
+      // arr[0] = 5;
+    },
+    { idWorker: `000${k}` }
+  );
+
+  worker.postMessage({ data: 'postmessage!!!!!' });
+}
